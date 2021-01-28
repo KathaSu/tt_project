@@ -1,15 +1,14 @@
 import sqlite3
 from sqlite3 import Error
 
-# For Linguistics Computation
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
-from lxml.etree import Element, SubElement, tostring
-
 import nltk
 import math
 import re
+
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+from lxml.etree import Element, SubElement, tostring, QName
 
 # nltk.download('stopwords')
 # nltk.download('wordnet')
@@ -98,7 +97,7 @@ def get_index_terms(ref_freq, tokens_freq):
     word_rel_freq = {lemma: math.log(c * tokens_freq.get(lemma) / ref_freq.get(lemma,1)) for lemma in tokens_freq}
     word_rel_freq = sorted(word_rel_freq.items(), key=lambda x: x[1], reverse=True)
     result_list = []
-    for key, value in word_rel_freq[0:50]:
+    for key, value in word_rel_freq[0:20]:
         result_list.append(key)
     return result_list
     
@@ -108,11 +107,15 @@ def fanfiction_data():
     print(f'There are {len(fanfictions)} Fanfiction is the database.')
     get_ref_data()
 
-    xml_fanfiction_database = Element('fanfiction_database')
+    attr_qname = QName("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation")
+    xml_fanfiction_database = Element('fanfiction_database',
+                                    {attr_qname: 'realschema.xsd'},
+                                    nsmap={'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+                                            })
     xml_fanfictions = SubElement(xml_fanfiction_database, 'fanfictions')
     
     for id, title, author, age_rating, tags, characters, language, body in fanfictions:
-        print("Processing Fanfiction {}/{}".format(id, len(fanfictions))) #, end='\r'
+        print("Processing Fanfiction {}/{}".format(id, len(fanfictions)), end='\r') #
         authortags = tags.split(', ')
         characters = characters.split(', ')
         text = clean_text(body)
