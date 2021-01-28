@@ -1,0 +1,53 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="fanfiction_database" type="fanfiction_databaseType"/>
+  <xs:complexType name="authortagsType">
+    <xs:sequence>
+      <xs:element name="authortag" type="xs:string" maxOccurs="100"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="charactersType">
+    <xs:sequence>
+      <xs:element name="character" type="xs:string" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="indextermsType">
+    <xs:sequence>
+      <xs:element name="indexterm" type="xs:string" maxOccurs="20"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="fanfictionType">
+    <xs:sequence>
+      <xs:element name="language" type="xs:string"/>
+      <xs:element name="agerating" type="xs:int"/>
+      <xs:element name="author" type="xs:string"/>
+      <xs:element name="title" type="xs:string"/>
+      <xs:element name="authortags" type="authortagsType"/>
+      <xs:element name="characters" type="charactersType"/>
+      <xs:element name="indexterms" type="indextermsType"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:short" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="fanfictionsType">
+    <xs:sequence>
+      <xs:element name="fanfiction" type="fanfictionType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ageratingType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="id" type="xs:int" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="ageratingsType">
+    <xs:sequence>
+      <xs:element name="agerating" type="ageratingType"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="fanfiction_databaseType">
+    <xs:sequence>
+      <xs:element name="fanfictions" type="fanfictionsType"/>
+      <xs:element name="ageratings" type="ageratingsType"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
