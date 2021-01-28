@@ -1,0 +1,49 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="fanfiction_database" type="fanfiction_databaseType"/>
+  <xs:complexType name="authortagsType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="authortag" maxOccurs="unbounded" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="charactersType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="character" maxOccurs="unbounded" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="index_termsType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="index_term" maxOccurs="20" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="fanfictionType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="title"/>
+      <xs:element type="xs:string" name="author"/>
+      <xs:element name="age_rating" type="age_ratingType"/>
+      <xs:element type="xs:string" name="language"/>
+      <xs:element type="authortagsType" name="authortags"/>
+      <xs:element type="charactersType" name="characters"/>
+      <xs:element type="index_termsType" name="index_terms"/>
+    </xs:sequence>
+    <xs:attribute type="xs:int" name="id" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="fanfictionsType">
+    <xs:sequence>
+      <xs:element type="fanfictionType" name="fanfiction" maxOccurs="unbounded" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="fanfiction_databaseType">
+    <xs:sequence>
+      <xs:element type="fanfictionsType" name="fanfictions"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:simpleType name="age_ratingType">
+        <xs:restriction base="xsd:string">
+        <xs:enumeration value="Teen And Up Audiences"/>
+        <xs:enumeration value="Not Rated"/>
+        <xs:enumeration value="General Audiences"/>
+        <xs:enumeration value="Mature"/>
+        <xs:enumeration value="Explicit"/>
+        </xs:restriction>
+        </xs:simpleType>
+</xs:schema>
