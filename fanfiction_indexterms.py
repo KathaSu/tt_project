@@ -42,8 +42,7 @@ def get_fanfiction(conn):
                     fanfiction.tags, fanfiction.characters, fanfiction.language_id, fanfiction.body  
                 FROM fanfiction
                 INNER JOIN author ON fanfiction.author_id=author.id
-                INNER JOIN age_rating ON fanfiction.age_rating_id=age_rating.id
-                LIMIT 2"""
+                INNER JOIN age_rating ON fanfiction.age_rating_id=age_rating.id"""
     cur = conn.cursor()
     fanfictions_execute = cur.execute(sql_select)
     fanfictions = fanfictions_execute.fetchall()
@@ -86,7 +85,7 @@ def gen_normtokens(text, characters):
         sentence_pos = nltk.pos_tag(nltk.word_tokenize(sentence))
         for token, pos in sentence_pos:
             if "NN" in pos and len(token) > 1:
-                return_tokens.append(lemma.lemmatize(token.lower(), pos="n"))
+                return_tokens.append(lemma.lemmatize(token.lower()))
     return_tokens = list(set(return_tokens) - set(character_singletokens))
     return return_tokens
 
@@ -115,14 +114,15 @@ def fanfiction_data():
     xml_fanfictions = SubElement(xml_fanfiction_database, 'fanfictions')
     
     for id, title, author, age_rating, tags, characters, language, body in fanfictions:
-        print("Processing Fanfiction {}/{}".format(id, len(fanfictions)), end='\r') #
+        print("Processing Fanfiction {}/{}".format(id, len(fanfictions))) #
         authortags = tags.split(', ')
         characters = characters.split(', ')
         text = clean_text(body)
         tokens = gen_normtokens(text, characters)
         tokens_freq = nltk.FreqDist()
         tokens_freq.update(tokens)
-        index_terms = get_index_terms(ref_freq, tokens_freq)
+        if tokens_freq.N() > 0:
+            index_terms = get_index_terms(ref_freq, tokens_freq)
 
         xml_fanfiction = SubElement(xml_fanfictions, 'fanfiction', id=str(id))
         xml_title = SubElement(xml_fanfiction, 'title').text = title
