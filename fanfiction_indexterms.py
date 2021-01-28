@@ -39,7 +39,12 @@ def get_ref_data():
             ref_freq[word] = float(freq)
 
 def get_fanfiction(conn):
-    sql_select = """SELECT * FROM fanfiction LIMIT 2"""
+    sql_select = """SELECT fanfiction.id, fanfiction.title, author.name, age_rating.rating, 
+                    fanfiction.tags, fanfiction.characters, fanfiction.language_id, fanfiction.body  
+                FROM fanfiction
+                INNER JOIN author ON fanfiction.author_id=author.id
+                INNER JOIN age_rating ON fanfiction.age_rating_id=age_rating.id
+                LIMIT 2"""
     cur = conn.cursor()
     fanfictions_execute = cur.execute(sql_select)
     fanfictions = fanfictions_execute.fetchall()
@@ -130,6 +135,7 @@ def fanfiction_data():
         xml_index_terms = SubElement(xml_fanfiction, 'index_terms')
         for index_term in index_terms:
             xml_index_term = SubElement(xml_index_terms, 'index_term').text = index_term
+    
     tree = tostring(xml_fanfiction_database, xml_declaration=True, pretty_print=True, encoding="utf-8")
     file = open("fanfictions.xml", "wb")
     file.write(tree)
