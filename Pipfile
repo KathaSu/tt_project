@@ -10,6 +10,8 @@ unidecode = "*"
 numpy = "*"
 pandas = "*"
 psycopg2 = "*"
+nltk = "*"
+lxml = "*"
 
 [dev-packages]
 
