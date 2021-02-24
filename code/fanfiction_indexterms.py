@@ -42,7 +42,8 @@ def get_fanfiction(conn):
                     fanfiction.tags, fanfiction.characters, fanfiction.language_id, fanfiction.body  
                 FROM fanfiction
                 INNER JOIN author ON fanfiction.author_id=author.id
-                INNER JOIN age_rating ON fanfiction.age_rating_id=age_rating.id"""
+                INNER JOIN age_rating ON fanfiction.age_rating_id=age_rating.id
+                """
     cur = conn.cursor()
     fanfictions_execute = cur.execute(sql_select)
     fanfictions = fanfictions_execute.fetchall()
@@ -55,7 +56,8 @@ def clean_text(string):
     string = re.sub("[0-9]", " ", string)
     string = re.sub("\.\.", " ", string)
     string = re.sub("\(.*?\)", " ", string)
-    string = re.sub("[\*| , |<| - |+]~_", " ", string)
+    string = re.sub("[\*|,|<| - |+]~_", " ", string)
+    string = re.sub("~", " ", string)
     string = re.sub(" [a-z|A-Z] ", " ", string)
     string = re.sub("-", "", string)
     string = re.sub("/", " ", string)
@@ -64,6 +66,7 @@ def clean_text(string):
     string = re.sub("[hH][Tt]{1,3}[pP]", " ", string)
     string = re.sub("(\.)(\S)", "\g<1> \g<2>", string)
     string = re.sub("\b[HhAaOoIiEeUuKkSs]{3,}\b", " ", string)
+    string = re.sub("\B'", "", string)
         
     countnew = 10
     for i in range(1, countnew):
@@ -85,7 +88,9 @@ def gen_normtokens(text, characters):
         sentence_pos = nltk.pos_tag(nltk.word_tokenize(sentence))
         for token, pos in sentence_pos:
             if "NN" in pos and len(token) > 1:
-                return_tokens.append(lemma.lemmatize(token.lower()))
+                token = lemma.lemmatize(token.lower())
+                token = re.sub("\b\.", "", token)
+                return_tokens.append(token)
     return_tokens = list(set(return_tokens) - set(character_singletokens))
     return return_tokens
 
@@ -108,7 +113,7 @@ def fanfiction_data():
 
     attr_qname = QName("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation")
     xml_fanfiction_database = Element('fanfiction_database',
-                                    {attr_qname: 'realschema.xsd'},
+                                    {attr_qname: 'xmlschema.xsd'},
                                     nsmap={'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
                                             })
     xml_fanfictions = SubElement(xml_fanfiction_database, 'fanfictions')
