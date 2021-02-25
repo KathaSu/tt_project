@@ -8,8 +8,7 @@
         <h2>Fanfiction Collection</h2>
         <table border="1">
             <tr bgcolor="#9acd32">
-                <th>Title</th>
-                <th>Author</th>
+                <th>Information</th>
                 <th>Authortags</th>
                 <th>Characters</th>
                 <th>Index Terms</th>
@@ -18,10 +17,10 @@
             <xsl:sort select="title"/>
             <tr>
                 <td>
-                    <xsl:value-of select="title"/>
+                    <b><xsl:value-of select="title"/><br/></b>
+                    <b>Author:</b>  <xsl:value-of select="author"/><br/>
+                    <b>Age Rating:</b>  <xsl:value-of select="age_rating"/><br/>
                 </td>
-                <td>
-                    <xsl:value-of select="author"/></td>
                 <td>
                     <xsl:for-each select="authortags/authortag">
                         <xsl:value-of select="text()"/><br/>

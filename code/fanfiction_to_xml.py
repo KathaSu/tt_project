@@ -23,7 +23,6 @@ def create_connection(db_file):
         print(e)
     return conn
 
-
 database = r"fanfiction.db"
 conn = create_connection(database)
 all_tokens = nltk.FreqDist()
@@ -49,7 +48,6 @@ def get_fanfiction(conn):
     fanfictions = fanfictions_execute.fetchall()
     conn.commit()
     return fanfictions
-
 
 def clean_text(string):
     string = re.sub("\n", "", string)
@@ -104,13 +102,18 @@ def get_index_terms(ref_freq, tokens_freq):
     for key, value in word_rel_freq[0:20]:
         result_list.append(key)
     return result_list
-    
+
 
 def fanfiction_data():
+    # get all fanfictions from the database. 
     fanfictions = get_fanfiction(conn)
     print(f'There are {len(fanfictions)} Fanfiction is the database.')
+
+    # Input our reference data. This is the comparison corpus for our fanfictions 
+    # to create tf-idf index terms.
     get_ref_data()
 
+    # Create basic frame for the XML file
     attr_qname = QName("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation")
     xml_fanfiction_database = Element('fanfiction_database',
                                     {attr_qname: 'xmlschema.xsd'},
@@ -118,17 +121,32 @@ def fanfiction_data():
                                             })
     xml_fanfictions = SubElement(xml_fanfiction_database, 'fanfictions')
     
+    # go through every fanfiction and propcess it
     for id, title, author, age_rating, tags, characters, language, body in fanfictions:
-        print("Processing Fanfiction {}/{}".format(id, len(fanfictions))) #
+        print("Processing Fanfiction {}/{}".format(id, len(fanfictions)))
         authortags = tags.split(', ')
         characters = characters.split(', ')
+        
+        # remove unnecessary characters, numbers and some special words (like "hahaha")
+        # from the fanfictions to get better index term results 
         text = clean_text(body)
+        
+        # Tokenizing and lemmatizing the remaining data of the fanfiction. Only nouns (NN)
+        # will be used in the next steps. In addition, the characters (persons in the 
+        # fanfiction) that are listed in an extra table in the database are removed from
+        # the tokens, since they are not relevant as index terms. 
         tokens = gen_normtokens(text, characters)
+        
+        # get list frequency of every token in the fanfiction
         tokens_freq = nltk.FreqDist()
         tokens_freq.update(tokens)
+
+        # Using tf-idf to create the top 20 index terms for each fanfiction.
         if tokens_freq.N() > 0:
             index_terms = get_index_terms(ref_freq, tokens_freq)
-
+        
+        # Writing the title, author, age_rating, authortags, characters and our generated
+        # index terms into the XML file.
         xml_fanfiction = SubElement(xml_fanfictions, 'fanfiction', id=str(id))
         xml_title = SubElement(xml_fanfiction, 'title').text = title
         xml_author = SubElement(xml_fanfiction, 'author').text = str(author)

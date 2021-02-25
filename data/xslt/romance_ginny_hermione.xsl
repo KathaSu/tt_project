@@ -12,13 +12,14 @@
 <xsl:value-of select="$newline" />
 <xsl:for-each select="//fanfiction">
 <xsl:sort select="title"/>
-<xsl:if test="index_terms/index_term/text() = 'flaw'">
-<xsl:if test="index_terms/index_term/text() = 'potion'">
+<xsl:if test="characters/character[contains(text(), 'Ginny')]">
+<xsl:if test="characters/character[contains(text(), 'Hermione')]">
+<xsl:if test="authortags/authortag[contains(text(), 'Romance')]">
 <xsl:value-of select="@id"/>
 <xsl:value-of select="$separator" />
 <xsl:value-of select="title"/>
 <xsl:value-of select="$separator" />
-<xsl:value-of select="author"/>
+<xsl:value-of select="author" />
 <xsl:value-of select="$separator" />
 <xsl:for-each select="authortags/authortag"><xsl:value-of select="text()"/>, </xsl:for-each>
 <xsl:value-of select="$separator" />
@@ -26,6 +27,7 @@
 <xsl:value-of select="$separator" />
 <xsl:for-each select="index_terms/index_term"><xsl:value-of select="text()"/>, </xsl:for-each>
 <xsl:value-of select="$newline" />
+</xsl:if>
 </xsl:if>
 </xsl:if>
 </xsl:for-each>

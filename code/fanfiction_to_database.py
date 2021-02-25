@@ -50,7 +50,11 @@ def insert_fanfiction(conn, title, author, age_rating, tags, characters, languag
 
 def main():
     database = r"fanfiction.db"
+    # create connection to the database we are useing
     conn = create_connection(database)
+    # Get the data that needs to be inserted into the database. Here we have a 
+    # csv file that is seperated by commas. In addition, some convertions need to
+    # be applied to prevent mistakes in the database and simplify accessing data. 
     data = pandas.read_csv(
         'fanfics_1.csv',
         delimiter=',',
@@ -63,6 +67,9 @@ def main():
             "body": lambda x: x.replace("\r\n", " ").replace('"', "'")})
     dataframe = pandas.DataFrame(data)
 
+    # Every english fanfiction will be added to the database. First the author,
+    # rating and language are added to their tables and the resulting ID will be
+    # output so that it can be used as a forgein key in the fanfiction table.
     for index, row in dataframe.iterrows():
         if row['language'] == "English":
             print(row['work_id'])
@@ -70,7 +77,15 @@ def main():
                 author = insert_author(conn, row["author"][0])
                 age_rating = insert_agerating(conn, row["rating"])
                 langauge = insert_language(conn, row["language"])
-                insert_fanfiction(conn, row["title"], author, age_rating, row["additional tags"], row["character"], langauge, row["body"])
+                insert_fanfiction(conn,
+                    row["title"],
+                    author,
+                    age_rating,
+                    row["additional tags"],
+                    row["character"],
+                    langauge,
+                    row["body"])
 
+# if the file is called the function main() will be called immediately
 if __name__ == '__main__':
     main()
